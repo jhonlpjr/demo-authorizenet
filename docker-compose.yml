@@ -1,0 +1,39 @@
+version: "3.7"
+services:
+   nginx-demo-authorize:
+      image: nginx:1.21.5-alpine
+      container_name: nginx-demo-authorize-proxy
+      ports:
+         - "80:80"
+      volumes:
+         - ./default.conf:/etc/nginx-demo-authorize/conf.d/default.conf
+      networks:
+         - app
+   frontend-demo-authorize:
+      image: node:16.14-alpine
+      container_name: frontend-demo-authorize
+      working_dir: /var/www
+      volumes:
+         - ./frontend/:/var/www
+      tty: true
+      ports:
+         - "3000:3000"
+      networks:
+         - app
+      depends_on:
+         - backend-demo-authorize
+      command: sh -c "npm install && npm start"
+   backend-demo-authorize:
+      image: node:14-alpine
+      container_name: backend-demo-authorize
+      working_dir: /var/www
+      volumes:
+         - ./backend/:/var/www
+      tty: true
+      ports:
+         - "8080:8080"
+      networks:
+         app:
+      command: sh -c "npm install && npm start"
+networks:
+   app:
